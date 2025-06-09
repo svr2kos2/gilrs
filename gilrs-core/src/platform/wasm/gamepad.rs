@@ -149,7 +149,15 @@ impl Gilrs {
                         .expect("axes() should be an array of f64");
                     if old_value != new_value {
                         let ev_code = crate::EvCode(gamepad.axis_code(axis_index));
-                        let value = (new_value * i32::MAX as f64) as i32;
+                        let value = if ev_code == crate::EvCode(EvCode(52)) {
+                            if new_value > 1.0 {
+                                0
+                            } else {
+                                (new_value * i32::MAX as f64) as i32
+                            }
+                        } else {
+                            (new_value * i32::MAX as f64) as i32
+                        };
                         self.event_cache
                             .push_back(Event::new(id, EventType::AxisValueChanged(value, ev_code)));
                     }
